@@ -487,7 +487,15 @@ export default function NominationsPage() {
 
                       {/* 3. Reg. Date & Time */}
                       <td className="px-3 py-2 whitespace-nowrap text-gray-600 font-medium">
-                        {regDateFormatted}
+                        <div>{regDateFormatted}</div>
+                        {nomination.updatedAt && new Date(nomination.updatedAt).getTime() - new Date(nomination.createdAt).getTime() > 120000 && (
+                          <div 
+                            className="text-[9px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-semibold w-fit mt-0.5" 
+                            title={`Re-submitted / Updated on: ${new Date(nomination.updatedAt).toLocaleString('en-US')}`}
+                          >
+                            Re-submitted: {new Date(nomination.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </div>
+                        )}
                       </td>
 
                       {/* 4. Reg. Type */}
@@ -613,9 +621,20 @@ export default function NominationsPage() {
                             </span>
                           </div>
                           {nomination.razorpayPaymentId && (
-                            <span className="text-[8px] font-mono text-gray-500 block truncate max-w-[130px]" title={nomination.razorpayPaymentId}>
-                              ID: {nomination.razorpayPaymentId}
-                            </span>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-[8px] font-mono text-gray-700 bg-gray-100 px-1 py-0.5 rounded border border-gray-200 block truncate max-w-[110px]" title={`Razorpay Payment ID: ${nomination.razorpayPaymentId}`}>
+                                {nomination.razorpayPaymentId}
+                              </span>
+                              <a
+                                href={`https://dashboard.razorpay.com/app/payments/${nomination.razorpayPaymentId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[9px] font-bold text-[#5e8e33] hover:text-[#4a7327] underline whitespace-nowrap"
+                                title="Open in Razorpay Dashboard"
+                              >
+                                [Verify]
+                              </a>
+                            </div>
                           )}
                           {nomination.paymentStatus !== 'Paid' && (
                             <button
@@ -963,30 +982,70 @@ export default function NominationsPage() {
               </div>
 
               <div className="mt-3 pt-3 border-t border-gray-200">
-                <p className="text-[10px] text-gray-400 font-bold uppercase mb-1.5">Payment Verification</p>
-                <div className="space-y-1">
-                  <p className="text-xs">
-                    <span className="text-gray-500 font-bold">Status:</span>{' '}
-                    <span className={`font-black ${selectedContact.paymentStatus === 'Paid' ? 'text-emerald-700' : 'text-amber-700'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase">Payment & Audit Verification</p>
+                  {selectedContact.razorpayPaymentId && (
+                    <a
+                      href={`https://dashboard.razorpay.com/app/payments/${selectedContact.razorpayPaymentId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-bold text-[#5e8e33] hover:underline flex items-center gap-0.5"
+                    >
+                      <span>Verify on Razorpay</span>
+                      <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+                <div className="space-y-1.5 bg-gray-50 p-2.5 rounded-lg border border-gray-200/70">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-500 font-bold">Payment Status:</span>
+                    <span className={`font-black uppercase text-[10px] px-2 py-0.5 rounded-full ${
+                      selectedContact.paymentStatus === 'Paid' 
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                        : 'bg-amber-100 text-amber-800 border border-amber-200'
+                    }`}>
                       {selectedContact.paymentStatus || 'Pending'}
                     </span>
-                  </p>
+                  </div>
                   {selectedContact.razorpayPaymentId && (
-                    <p className="text-xs">
-                      <span className="text-gray-500 font-bold">Razorpay Payment ID:</span>{' '}
-                      <span className="font-mono font-bold text-gray-900 select-all">{selectedContact.razorpayPaymentId}</span>
-                    </p>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500 font-bold">Razorpay Payment ID:</span>
+                      <span className="font-mono font-bold text-gray-900 bg-white px-1.5 py-0.5 rounded border border-gray-200 select-all text-[11px]">
+                        {selectedContact.razorpayPaymentId}
+                      </span>
+                    </div>
                   )}
                   {selectedContact.razorpayOrderId && (
-                    <p className="text-xs">
-                      <span className="text-gray-500 font-bold">Razorpay Order ID:</span>{' '}
-                      <span className="font-mono font-semibold text-gray-700 select-all">{selectedContact.razorpayOrderId}</span>
-                    </p>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500 font-bold">Razorpay Order ID:</span>
+                      <span className="font-mono font-semibold text-gray-700 bg-white px-1.5 py-0.5 rounded border border-gray-200 select-all text-[11px]">
+                        {selectedContact.razorpayOrderId}
+                      </span>
+                    </div>
                   )}
-                  <p className="text-xs">
-                    <span className="text-gray-500 font-bold">Amount:</span>{' '}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-500 font-bold">Total Amount:</span>
                     <span className="font-bold text-gray-900">₹{(selectedContact.totalAmount || 14160).toLocaleString('en-IN')}</span>
-                  </p>
+                  </div>
+                  {selectedContact.createdAt && (
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-500 font-bold">Initial Registration:</span>
+                      <span className="font-medium text-gray-700">
+                        {new Date(selectedContact.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+                      </span>
+                    </div>
+                  )}
+                  {selectedContact.updatedAt && new Date(selectedContact.updatedAt).getTime() - new Date(selectedContact.createdAt).getTime() > 120000 && (
+                    <div className="pt-1.5 mt-1 border-t border-amber-200/60 text-[10px] text-amber-800 bg-amber-50/80 p-2 rounded">
+                      <p className="font-bold flex items-center gap-1">
+                        <span>ℹ️ Re-submitted / Updated:</span>
+                        <span>{new Date(selectedContact.updatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                      </p>
+                      <p className="mt-0.5 text-amber-700">
+                        Client re-submitted nomination on this date. System recognized original payment without charging again.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
