@@ -219,7 +219,7 @@ export default function NominationsPage() {
     const headers = [
       'S.No.', 'Reg ID', 'Reg Date', 'Reg Type', 'Recipient Name', 'Designation', 
       'Organization', 'Website', 'Applicant Type', 'Award Category', 'Mobile', 'Email', 
-      'City', 'State', 'Country', 'Pin Code', 'Address', 'Amount', 'Payment Status', 'Payment Method', 'Status'
+      'City', 'State', 'Country', 'Pin Code', 'Address', 'Amount', 'Payment Status', 'Payment Method', 'Razorpay Payment ID', 'Razorpay Order ID', 'Status'
     ];
 
     const rows = filteredNominations.map((n, index) => [
@@ -240,9 +240,11 @@ export default function NominationsPage() {
       `"${n.country || ''}"`,
       `"${n.pinCode || ''}"`,
       `"${n.address || ''}"`,
-      n.totalAmount || 9440,
+      n.totalAmount || 14160,
       n.paymentStatus || 'Pending',
       n.paymentMethod || 'Online (Razorpay)',
+      `"${(n.razorpayPaymentId || '').replace(/"/g, '""')}"`,
+      `"${(n.razorpayOrderId || '').replace(/"/g, '""')}"`,
       n.status || 'UNDER REVIEW'
     ]);
 
@@ -590,7 +592,7 @@ export default function NominationsPage() {
 
                       {/* 15. Amount */}
                       <td className="px-3 py-2 whitespace-nowrap text-right font-black text-gray-900 text-[11px]">
-                        ₹{(nomination.totalAmount || 9440).toLocaleString('en-IN')}
+                        ₹{(nomination.totalAmount || 14160).toLocaleString('en-IN')}
                       </td>
 
                       {/* 16. Payment & Type */}
@@ -610,6 +612,11 @@ export default function NominationsPage() {
                               ({nomination.paymentMethod || 'Online (Razorpay)'})
                             </span>
                           </div>
+                          {nomination.razorpayPaymentId && (
+                            <span className="text-[8px] font-mono text-gray-500 block truncate max-w-[130px]" title={nomination.razorpayPaymentId}>
+                              ID: {nomination.razorpayPaymentId}
+                            </span>
+                          )}
                           {nomination.paymentStatus !== 'Paid' && (
                             <button
                               onClick={async () => {
@@ -952,6 +959,34 @@ export default function NominationsPage() {
                   <p className="text-[10px] text-gray-400 font-bold uppercase">Full Location & Address</p>
                   <p className="font-semibold text-gray-800">{selectedContact.city}, {selectedContact.state}, {selectedContact.country} - {selectedContact.pinCode}</p>
                   <p className="text-gray-600 mt-0.5">{selectedContact.address}</p>
+                </div>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <p className="text-[10px] text-gray-400 font-bold uppercase mb-1.5">Payment Verification</p>
+                <div className="space-y-1">
+                  <p className="text-xs">
+                    <span className="text-gray-500 font-bold">Status:</span>{' '}
+                    <span className={`font-black ${selectedContact.paymentStatus === 'Paid' ? 'text-emerald-700' : 'text-amber-700'}`}>
+                      {selectedContact.paymentStatus || 'Pending'}
+                    </span>
+                  </p>
+                  {selectedContact.razorpayPaymentId && (
+                    <p className="text-xs">
+                      <span className="text-gray-500 font-bold">Razorpay Payment ID:</span>{' '}
+                      <span className="font-mono font-bold text-gray-900 select-all">{selectedContact.razorpayPaymentId}</span>
+                    </p>
+                  )}
+                  {selectedContact.razorpayOrderId && (
+                    <p className="text-xs">
+                      <span className="text-gray-500 font-bold">Razorpay Order ID:</span>{' '}
+                      <span className="font-mono font-semibold text-gray-700 select-all">{selectedContact.razorpayOrderId}</span>
+                    </p>
+                  )}
+                  <p className="text-xs">
+                    <span className="text-gray-500 font-bold">Amount:</span>{' '}
+                    <span className="font-bold text-gray-900">₹{(selectedContact.totalAmount || 14160).toLocaleString('en-IN')}</span>
+                  </p>
                 </div>
               </div>
 

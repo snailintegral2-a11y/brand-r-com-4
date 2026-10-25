@@ -58,9 +58,10 @@ exports.createNomination = async (req, res) => {
       summaryDocumentUrl = req.files['summaryDocument'][0].path;
     }
 
-    // ── Check if nomination already exists ──
+    // ── Check if nomination already exists for this award category ──
     const existingNomination = await AwardNomination.findOne({
-      $or: [{ email: cleanEmail }, { mobileNumber: cleanMobile }]
+      $or: [{ email: cleanEmail }, { mobileNumber: cleanMobile }],
+      awardCategory: awardCategory
     });
 
     if (existingNomination) {

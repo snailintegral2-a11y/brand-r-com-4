@@ -394,19 +394,33 @@ export default function AwardNominationModal({ isOpen, onClose }) {
                 </button>
 
                 <h2 className="text-[18px] md:text-[20px] font-sans text-gray-900 font-black mb-3 mt-2 text-center">
-                  Nomination Submitted Successfully!
+                  {isExistingRecord ? 'Existing Paid Nomination Found!' : 'Nomination Submitted Successfully!'}
                 </h2>
 
                 <div className="text-gray-800 font-medium text-[12.5px] leading-relaxed space-y-3 mb-6 text-center w-full max-w-lg mx-auto">
-                  <p>Thank you for submitting your nomination for the BRAND R.Comm Awards 2026.</p>
-                  <p>Your nomination details and payment have been received successfully.</p>
-                  <p>Our external team (Market Research Agency Or Knowledge Partner) or Equivalent will verify your submission and supporting documents before forwarding your nomination to the Jury Panel for evaluation.</p>
-                  <p>Your Event Entry Pass and complete event guidelines will be shared with you 3 days prior to the event via your registered email and mobile number.</p>
+                  {isExistingRecord ? (
+                    <>
+                      <p>
+                        A nomination for <span className="font-bold text-gray-900">{existingData?.fullName || formData.fullName}</span> ({existingData?.email || formData.email}) is already registered and was <span className="font-bold text-emerald-700">successfully paid previously</span>.
+                      </p>
+                      <p className="bg-emerald-50 text-emerald-800 p-2.5 rounded-lg border border-emerald-200 text-[12px]">
+                        ℹ️ <strong>No additional payment was charged today.</strong> Your updated submission details and documents have been saved to your entry.
+                      </p>
+                      <p>Our external jury panel and evaluation team will review your submission documents as scheduled.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>Thank you for submitting your nomination for the BRAND R.Comm Awards 2026.</p>
+                      <p>Your nomination details and payment have been received successfully.</p>
+                      <p>Our external team (Market Research Agency Or Knowledge Partner) or Equivalent will verify your submission and supporting documents before forwarding your nomination to the Jury Panel for evaluation.</p>
+                      <p>Your Event Entry Pass and complete event guidelines will be shared with you 3 days prior to the event via your registered email and mobile number.</p>
+                    </>
+                  )}
                   <p>We look forward to welcoming you to BRAND R.Comm 2026.</p>
                 </div>
 
                 <div className="bg-[#f3faeb] p-3 rounded-xl border border-brand-primary/20 w-full max-w-sm mb-6 text-left space-y-2 text-[12px] mx-auto shadow-sm">
-                  <div className="flex justify-between items-center"><span className="text-[#5e8e33] font-bold uppercase tracking-wider text-[10px]">Payment ID:</span><span className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded-lg border border-[#5e8e33]/20 shadow-xs">{razorpayPaymentId || (existingData && (existingData.razorpayPaymentId || existingData.paymentMethod)) || 'N/A'}</span></div>
+                  <div className="flex justify-between items-center"><span className="text-[#5e8e33] font-bold uppercase tracking-wider text-[10px]">{isExistingRecord ? 'Original Payment ID:' : 'Payment ID:'}</span><span className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded-lg border border-[#5e8e33]/20 shadow-xs">{razorpayPaymentId || (existingData && (existingData.razorpayPaymentId || existingData.paymentMethod)) || 'N/A'}</span></div>
                   <div className="flex justify-between items-center"><span className="text-[#5e8e33] font-bold uppercase tracking-wider text-[10px]">Reg. ID:</span><span className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded-lg border border-[#5e8e33]/20 shadow-xs">{submittedNominationId ? `#${submittedNominationId.slice(-8).toUpperCase()}` : 'N/A'}</span></div>
                 </div>
 

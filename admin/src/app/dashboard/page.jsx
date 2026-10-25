@@ -97,7 +97,7 @@ export default function DashboardHome() {
       let totalRev = 0;
       nominationsData.forEach(n => {
         if (n.paymentStatus === 'Paid' || n.paymentStatus === 'APPROVED') {
-          totalRev += (n.totalAmount || 9440);
+          totalRev += (n.totalAmount || 14160);
         }
       });
       delegatesData.forEach(d => {
